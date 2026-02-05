@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MineFun Network | Play. Build. Compete.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #22c55e;
+            --secondary: #3b82f6;
+            --bg-dark: #0a0c10;
+            --card-bg: #161b22;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #e6edf3;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .nav-logo {
+            font-family: 'Plus+Jakarta+Sans', sans-serif;
+        }
+
+        .glass-nav {
+            background: rgba(10, 12, 16, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .minecraft-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(34, 197, 94, 0.4);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-badge {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .chat-container {
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="glass-nav fixed top-0 w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="showPage('home')">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="box" class="text-white w-6 h-6"></i>
+                    </div>
+                    <span class="text-xl font-extrabold tracking-tighter text-white">MINEFUN<span class="text-green-500">.</span></span>
+                </div>
+                
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex space-x-1 lg:space-x-4">
+                    <button onclick="showPage('home')" class="nav-link px-3 py-2 text-sm font-medium hover:text-green-400 transition">Home</button>
+                    <button onclick="showPage('join')" class="nav-link px-3 py-2 text-sm font-medium hover:text-green-400 transition">Join Now</button>
+                    <button onclick="showPage('start')" class="nav-link px-3 py-2 text-sm font-medium hover:text-green-400 transition">Start Server</button>
+                    <button onclick="showPage('modes')" class="nav-link px-3 py-2 text-sm font-medium hover:text-green-400 transition">Game Modes</button>
+                    <button onclick="showPage('rules')" class="nav-link px-3 py-2 text-sm font-medium hover:text-green-400 transition">Rules</button>
+                    <button onclick="showPage('community')" class="nav-link px-3 py-2 text-sm font-medium hover:text-green-400 transition">Community</button>
+                    <button onclick="showPage('staff')" class="nav-link px-3 py-2 text-sm font-medium hover:text-green-400 transition">Staff</button>
+                    <button onclick="showPage('chat')" class="nav-link px-3 py-2 text-sm font-medium hover:text-green-400 transition">Group Chat</button>
+                    <button onclick="showPage('contact')" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full text-sm font-medium border border-white/10 transition">Contact</button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-300 hover:text-white">
+                        <i data-lucide="menu"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-slate-900 border-b border-white/10 p-4 space-y-2">
+            <button onclick="showPage('home')" class="block w-full text-left px-4 py-2 rounded hover:bg-white/5">Home</button>
+            <button onclick="showPage('join')" class="block w-full text-left px-4 py-2 rounded hover:bg-white/5">Join Now</button>
+            <button onclick="showPage('start')" class="block w-full text-left px-4 py-2 rounded hover:bg-white/5">Start Server</button>
+            <button onclick="showPage('modes')" class="block w-full text-left px-4 py-2 rounded hover:bg-white/5">Game Modes</button>
+            <button onclick="showPage('rules')" class="block w-full text-left px-4 py-2 rounded hover:bg-white/5">Rules</button>
+            <button onclick="showPage('chat')" class="block w-full text-left px-4 py-2 rounded hover:bg-white/5">Group Chat</button>
+            <button onclick="showPage('contact')" class="block w-full text-left px-4 py-2 rounded hover:bg-white/5">Contact</button>
+        </div>
+    </nav>
+
+    <main class="pt-32 pb-20 px-4">
+        
+        <!-- PAGE: HOME -->
+        <section id="home" class="page-section active max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="status-badge px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6 inline-block">
+                    Server Status: Online
+                </span>
+                <h1 class="text-5xl md:text-7xl font-extrabold mb-6">
+                    Welcome to <span class="minecraft-gradient">MineFun Network</span>
+                </h1>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
+                    Play. Build. Compete. Have Fun. Join a growing community of players on the ultimate cross-version experience.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button onclick="showPage('join')" class="btn-gradient w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-2">
+                        <i data-lucide="play-circle"></i> Join Now
+                    </button>
+                    <button onclick="showPage('start')" class="bg-white/5 hover:bg-white/10 border border-white/10 w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-white text-lg transition">
+                        Start Server
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-20">
+                <div class="card p-8 rounded-2xl flex flex-col items-center text-center">
+                    <div class="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 mb-4">
+                        <i data-lucide="layers"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Cross-Version</h3>
+                    <p class="text-gray-400">All Minecraft versions supported. Join from Java or Bedrock with ease.</p>
+                </div>
+                <div class="card p-8 rounded-2xl flex flex-col items-center text-center">
+                    <div class="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500 mb-4">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">No Lag</h3>
+                    <p class="text-gray-400">Optimized configurations to ensure the smoothest gameplay for everyone.</p>
+                </div>
+                <div class="card p-8 rounded-2xl flex flex-col items-center text-center">
+                    <div class="w-12 h-12 bg-purple-500/10 rounded-full flex items-center justify-center text-purple-500 mb-4">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Community Driven</h3>
+                    <p class="text-gray-400">Active Discord, friendly staff, and regular updates based on your feedback.</p>
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-bold mb-8 text-center">Featured Game Modes</h2>
+            <div id="game-modes-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- PAGE: JOIN NOW -->
+        <section id="join" class="page-section max-w-4xl mx-auto">
+            <h2 class="text-4xl font-bold mb-4 text-center">Join the Network</h2>
+            <p class="text-center text-gray-400 mb-12">Universal connectivity. One address for everyone.</p>
+            
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <div class="card p-8 rounded-2xl border-l-4 border-l-blue-500">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-blue-500/10 rounded-lg text-blue-400"><i data-lucide="laptop"></i></div>
+                        <h3 class="text-2xl font-bold">Java Edition</h3>
+                    </div>
+                    <div class="bg-black/40 p-4 rounded-lg font-mono text-blue-300 break-all mb-4 select-all cursor-pointer" onclick="copyText('MineFunWorld.aternos.me:25725')">
+                        MineFunWorld.aternos.me:25725
+                    </div>
+                    <p class="text-sm text-gray-500">Compatible with all modern versions.</p>
+                </div>
+
+                <div class="card p-8 rounded-2xl border-l-4 border-l-green-500">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-green-500/10 rounded-lg text-green-400"><i data-lucide="smartphone"></i></div>
+                        <h3 class="text-2xl font-bold">Bedrock / Pocket</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-xs uppercase text-gray-500 font-bold">Address</span>
+                            <div class="bg-black/40 p-3 rounded-lg font-mono text-green-300 select-all">MineFunWorld.aternos.me</div>
+                        </div>
+                        <div>
+                            <span class="text-xs uppercase text-gray-500 font-bold">Port</span>
+                            <div class="bg-black/40 p-3 rounded-lg font-mono text-green-300 select-all">25725</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-8 rounded-2xl">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <i data-lucide="help-circle" class="text-green-500"></i> How to Join
+                </h3>
+                <ol class="space-y-4 text-gray-300">
+                    <li class="flex gap-4"><span class="flex-shrink-0 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-sm">1</span> Open Minecraft and select Multiplayer (Java) or Servers (Bedrock).</li>
+                    <li class="flex gap-4"><span class="flex-shrink-0 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-sm">2</span> Click "Add Server" and enter the details provided above.</li>
+                    <li class="flex gap-4"><span class="flex-shrink-0 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-sm">3</span> Save and Click "Join Server".</li>
+                    <li class="flex gap-4 text-green-400 font-medium"><i data-lucide="info" class="w-5 h-5"></i> Note: Ensure the server is currently started via the "Start Server" instructions.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- PAGE: START SERVER -->
+        <section id="start" class="page-section max-w-3xl mx-auto">
+            <h2 class="text-4xl font-bold mb-4 text-center">Start the Server</h2>
+            <p class="text-center text-gray-400 mb-12">Our server uses Aternos with a sleep mode. Follow these steps to wake it up.</p>
+
+            <div class="space-y-4">
+                <div class="card p-6 rounded-xl flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-green-500 font-bold">1</div>
+                    <div>
+                        <h4 class="font-bold text-lg">Create Account</h4>
+                        <p class="text-gray-400">Register at <a href="https://aternos.org" target="_blank" class="text-blue-400 underline">aternos.org</a> if you haven't already.</p>
+                    </div>
+                </div>
+                <div class="card p-6 rounded-xl flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-green-500 font-bold">2</div>
+                    <div>
+                        <h4 class="font-bold text-lg">Join Discord</h4>
+                        <p class="text-gray-400">Join our official community Discord servers below.</p>
+                    </div>
+                </div>
+                <div class="card p-6 rounded-xl flex items-start gap-4 border-l-4 border-l-blue-500">
+                    <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-blue-500 font-bold">3</div>
+                    <div>
+                        <h4 class="font-bold text-lg">Request Access</h4>
+                        <p class="text-gray-400">Message a staff member or in the support channel: <br><span class="text-white italic">"My Aternos username: YOUR_USERNAME"</span></p>
+                    </div>
+                </div>
+                <div class="card p-6 rounded-xl flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-green-500 font-bold">4</div>
+                    <div>
+                        <h4 class="font-bold text-lg">Wait for Approval</h4>
+                        <p class="text-gray-400">Staff will grant you permission to start the server manually.</p>
+                    </div>
+                </div>
+                <div class="card p-6 rounded-xl flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-green-500 font-bold">5</div>
+                    <div>
+                        <h4 class="font-bold text-lg">Start & Play</h4>
+                        <p class="text-gray-400">Log into Aternos, select the MineFun server, and click "Start". Join when the status turns green.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <a href="https://discord.gg/PFVhdaSPbU" target="_blank" class="flex items-center justify-center gap-2 p-4 rounded-xl bg-[#5865F2] hover:opacity-90 transition font-bold">
+                    <i data-lucide="message-square"></i> Discord Server 1
+                </a>
+                <a href="https://discord.gg/xD6MHbUJnG" target="_blank" class="flex items-center justify-center gap-2 p-4 rounded-xl bg-[#5865F2] hover:opacity-90 transition font-bold">
+                    <i data-lucide="message-square"></i> Discord Server 2
+                </a>
+            </div>
+
+            <div class="mt-8 p-6 bg-red-500/10 border border-red-500/20 rounded-xl text-sm">
+                <h5 class="text-red-400 font-bold mb-2 uppercase tracking-tight">Crucial Rules:</h5>
+                <ul class="list-disc ml-5 text-red-200/70 space-y-1">
+                    <li>Do not spam the start button.</li>
+                    <li>Only start the server if you are actually going to play.</li>
+                    <li>Misuse of start access will result in permanent removal.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- PAGE: GAME MODES -->
+        <section id="modes" class="page-section max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold mb-12 text-center">Infinite Ways to Play</h2>
+            <div id="full-modes-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- PAGE: RULES -->
+        <section id="rules" class="page-section max-w-4xl mx-auto">
+            <h2 class="text-4xl font-bold mb-12 text-center underline decoration-green-500 decoration-4 underline-offset-8">Server Rules</h2>
+            <div class="space-y-6">
+                <div class="card p-8 rounded-2xl flex items-center gap-6">
+                    <div class="text-4xl font-black text-white/10">01</div>
+                    <div>
+                        <h4 class="text-xl font-bold text-green-400">No Hacking or Cheating</h4>
+                        <p class="text-gray-400">The use of hacked clients, X-ray, or any third-party software that gives an unfair advantage is strictly forbidden.</p>
+                    </div>
+                </div>
+                <div class="card p-8 rounded-2xl flex items-center gap-6">
+                    <div class="text-4xl font-black text-white/10">02</div>
+                    <div>
+                        <h4 class="text-xl font-bold text-blue-400">Respect All Players</h4>
+                        <p class="text-gray-400">Treat others as you'd like to be treated. Harassment, bullying, or toxicity will not be tolerated.</p>
+                    </div>
+                </div>
+                <div class="card p-8 rounded-2xl flex items-center gap-6">
+                    <div class="text-4xl font-black text-white/10">03</div>
+                    <div>
+                        <h4 class="text-xl font-bold text-green-400">No Abusive Language</h4>
+                        <p class="text-gray-400">Keep the chat friendly. Slurs, excessive swearing, or hateful speech result in an immediate mute or ban.</p>
+                    </div>
+                </div>
+                <div class="card p-8 rounded-2xl flex items-center gap-6">
+                    <div class="text-4xl font-black text-white/10">04</div>
+                    <div>
+                        <h4 class="text-xl font-bold text-blue-400">Follow Staff Instructions</h4>
+                        <p class="text-gray-400">Our staff team is here to help. Their decisions are final. If you have a dispute, use the Discord ticket system.</p>
+                    </div>
+                </div>
+                <div class="card p-8 rounded-2xl flex items-center gap-6">
+                    <div class="text-4xl font-black text-white/10">05</div>
+                    <div>
+                        <h4 class="text-xl font-bold text-red-400">Punishments are Enforced</h4>
+                        <p class="text-gray-400">Warnings, mutes, kicks, and bans are logged. We take rule-breaking seriously to keep the game fun for everyone.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE: COMMUNITY -->
+        <section id="community" class="page-section max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl font-bold mb-6">Our Community</h2>
+            <div class="card p-12 rounded-3xl mb-12">
+                <i data-lucide="users" class="w-16 h-16 text-green-500 mx-auto mb-6"></i>
+                <p class="text-2xl text-gray-300 leading-relaxed mb-8">
+                    MineFun Network is more than just a server—it's a home for builders, fighters, and friends. Join our Discord to participate in events, giveaways, and chat with fellow players 24/7.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="https://discord.gg/xD6MHbUJnG" target="_blank" class="px-8 py-4 bg-[#5865F2] rounded-xl font-bold hover:scale-105 transition">Discord Main</a>
+                    <a href="https://discord.gg/PFVhdaSPbU" target="_blank" class="px-8 py-4 bg-[#5865F2] rounded-xl font-bold hover:scale-105 transition">Discord Support</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE: STAFF -->
+        <section id="staff" class="page-section max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold mb-12 text-center">Meet the Team</h2>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Owner -->
+                <div class="card p-8 rounded-2xl text-center border-t-4 border-t-red-500">
+                    <div class="w-20 h-20 bg-red-500/10 rounded-full mx-auto mb-4 flex items-center justify-center text-red-500">
+                        <i data-lucide="crown" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">Ayansh Rawat</h3>
+                    <p class="text-red-400 font-bold text-xs uppercase tracking-widest mt-1">Owner</p>
+                </div>
+                <!-- Admin -->
+                <div class="card p-8 rounded-2xl text-center border-t-4 border-t-purple-500">
+                    <div class="w-20 h-20 bg-purple-500/10 rounded-full mx-auto mb-4 flex items-center justify-center text-purple-500">
+                        <i data-lucide="shield-check" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">N/A</h3>
+                    <p class="text-purple-400 font-bold text-xs uppercase tracking-widest mt-1">Admin</p>
+                </div>
+                <!-- Moderator -->
+                <div class="card p-8 rounded-2xl text-center border-t-4 border-t-blue-500">
+                    <div class="w-20 h-20 bg-blue-500/10 rounded-full mx-auto mb-4 flex items-center justify-center text-blue-500">
+                        <i data-lucide="shield" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">N/A</h3>
+                    <p class="text-blue-400 font-bold text-xs uppercase tracking-widest mt-1">Moderator</p>
+                </div>
+                <!-- Helper -->
+                <div class="card p-8 rounded-2xl text-center border-t-4 border-t-green-500">
+                    <div class="w-20 h-20 bg-green-500/10 rounded-full mx-auto mb-4 flex items-center justify-center text-green-500">
+                        <i data-lucide="heart-handshake" class="w-10 h-10"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">N/A</h3>
+                    <p class="text-green-400 font-bold text-xs uppercase tracking-widest mt-1">Helper</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE: GROUP CHAT -->
+        <section id="chat" class="page-section max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-bold mb-4">Web Group Chat</h2>
+                <p class="text-gray-400">Chat with MineFun Network players directly on the website.</p>
+            </div>
+
+            <div class="card p-8 rounded-3xl flex flex-col items-center shadow-2xl">
+                <div class="chat-container w-full max-w-[300px] bg-black/20 rounded-xl overflow-hidden p-2">
+                    <script id="cid0020000431283071409" data-cfasync="false" async src="//st.chatango.com/js/gz/emb.js" style="width:250px;height:350px;">
+                        {"handle":"minefungroupchat","arch":"js","styles":{"b":100,"c":"000000","d":"000000","l":"FFFFFF","m":"FFFFFF","p":"10","r":100,"fwtickm":1}}
+                    </script>
+                </div>
+                
+                <div class="mt-8 p-6 bg-blue-500/5 rounded-2xl border border-blue-500/20 text-center w-full">
+                    <p class="text-blue-200 mb-4 font-medium italic text-sm">
+                        “For better security, moderation, and a smoother experience, we strongly recommend using our Discord servers for chatting.”
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <a href="https://discord.gg/xD6MHbUJnG" class="flex items-center gap-2 px-6 py-3 bg-[#5865F2] rounded-lg text-sm font-bold"><i data-lucide="message-square"></i> Join Main Discord</a>
+                        <a href="https://discord.gg/PFVhdaSPbU" class="flex items-center gap-2 px-6 py-3 bg-[#5865F2] rounded-lg text-sm font-bold"><i data-lucide="message-square"></i> Join Support Discord</a>
+                    </div>
+                    <div class="mt-6 flex justify-center gap-8 text-[10px] uppercase tracking-widest text-gray-500 font-bold">
+                        <span>No Accounts Required</span>
+                        <span>Discord is Primary</span>
+                        <span>No Voice/Video</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE: CONTACT -->
+        <section id="contact" class="page-section max-w-4xl mx-auto">
+            <h2 class="text-4xl font-bold mb-12 text-center">Contact Us</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card p-8 rounded-2xl">
+                    <div class="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 mb-6">
+                        <i data-lucide="mail"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Email Support</h3>
+                    <p class="text-gray-400 mb-4">Official inquiries and support.</p>
+                    <a href="mailto:Ayanshrawat90@gmail.com" class="text-green-400 font-mono hover:underline">Ayanshrawat90@gmail.com</a>
+                </div>
+                <div class="card p-8 rounded-2xl">
+                    <div class="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500 mb-6">
+                        <i data-lucide="message-square"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Discord Support</h3>
+                    <p class="text-gray-400 mb-4">Fastest way to get help.</p>
+                    <div class="space-y-2">
+                        <a href="https://discord.gg/xD6MHbUJnG" class="text-blue-400 hover:underline block">Main Discord Server</a>
+                        <a href="https://discord.gg/PFVhdaSPbU" class="text-blue-400 hover:underline block">Support Discord Server</a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 text-center text-gray-500">
+                <p>Please be respectful and patient. No spamming allowed.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-black/50 py-12 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-600 rounded flex items-center justify-center">
+                    <i data-lucide="box" class="text-white w-4 h-4"></i>
+                </div>
+                <span class="text-lg font-extrabold tracking-tighter text-white">MINEFUN NETWORK</span>
+            </div>
+            <p class="text-gray-500 text-sm">© 2024 MineFun Network. Not an official Minecraft product.</p>
+            <div class="flex gap-4">
+                <a href="https://discord.gg/xD6MHbUJnG" class="text-gray-400 hover:text-white transition"><i data-lucide="message-square"></i></a>
+                <a href="https://discord.gg/PFVhdaSPbU" class="text-gray-400 hover:text-white transition"><i data-lucide="info"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast for copying IP -->
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full font-bold shadow-lg opacity-0 pointer-events-none transition-all">
+        IP Copied to Clipboard!
+    </div>
+
+    <script>
+        // Game Modes Data
+        const gameModes = [
+            { name: "Survival", icon: "tree-pine", color: "green", desc: "The classic Minecraft experience with custom twists." },
+            { name: "OneBlock", icon: "box", color: "blue", desc: "Start with one block and expand your world forever." },
+            { name: "SkyBlock", icon: "cloud", color: "cyan", desc: "Survival on a floating island. Resource management is key." },
+            { name: "BedWars", icon: "bed", color: "red", desc: "Protect your bed and destroy the enemy's in this fast-paced game." },
+            { name: "PvP", icon: "swords", color: "orange", desc: "Test your combat skills against other players in arenas." },
+            { name: "Lifesteal", icon: "heart", color: "rose", desc: "Killing players grants you hearts. Dying loses them." },
+            { name: "Headsteal", icon: "smile", color: "amber", desc: "Collect the heads of your enemies to show dominance." },
+            { name: "Parkour", icon: "footprints", color: "indigo", desc: "Race against time on challenging obstacle courses." },
+            { name: "Creative", icon: "palette", color: "purple", desc: "Build anything you can imagine with unlimited resources." },
+            { name: "More Soon", icon: "plus-circle", color: "gray", desc: "We are constantly working on new game modes." }
+        ];
+
+        // Page Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0);
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        // Initialize Icons & Content
+        window.onload = () => {
+            lucide.createIcons();
+            
+            const homeGrid = document.getElementById('game-modes-grid');
+            const fullGrid = document.getElementById('full-modes-grid');
+
+            gameModes.forEach((mode, idx) => {
+                const cardHtml = `
+                    <div class="card p-6 rounded-xl flex flex-col items-center text-center cursor-default">
+                        <div class="w-10 h-10 mb-4 flex items-center justify-center text-${mode.color}-400">
+                            <i data-lucide="${mode.icon}"></i>
+                        </div>
+                        <h4 class="font-bold">${mode.name}</h4>
+                        ${fullGrid ? `<p class="text-xs text-gray-500 mt-2">${mode.desc}</p>` : ''}
+                    </div>
+                `;
+                
+                if(idx < 8) homeGrid.innerHTML += cardHtml;
+                fullGrid.innerHTML += cardHtml;
+            });
+            
+            lucide.createIcons();
+        };
+
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        // Copy to clipboard
+        function copyText(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            const toast = document.getElementById('toast');
+            toast.style.opacity = '1';
+            toast.style.transform = 'translate(-1/2, -10px)';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-1/2, 0)';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
+
